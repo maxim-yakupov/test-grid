@@ -1,0 +1,92 @@
+:host {
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.grid {
+    display: flex;
+    flex-flow: column nowrap;
+    flex: 1;
+    row-gap: 1rem;
+}
+
+header, footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+section {
+    flex: 1;
+    min-height: 10rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-radius: 10px;
+
+    > * {
+        flex: 1;
+        border-radius: inherit;
+    }
+}
+
+.modal-info {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+    background-color: rgba(230, 230, 230, 0.3);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+
+    > .modal-info__text {
+        background-color: darkslategray;
+        color: white;
+        padding: 0.5rem;
+        border-radius: 10px;
+        border: 3px solid white;
+        margin: 0.5rem;
+    }
+}
+
+.grid-view-mode {
+    button {
+        background-color: darkgray;
+        color: lightgray;
+        text-align: center;
+        padding: 0.5rem; 
+        
+        &:first-of-type {
+            border-radius: 10px 0 0 10px;
+        }
+        &:last-of-type {
+            border-radius: 0 10px 10px 0;
+        }
+    }
+}
+
+.grid-page-controls > * {
+    display: inline-block;
+    background-color: darkslategray;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    height: 2rem;
+    width: 2rem;
+    padding: 0.5rem;
+    margin: 0 1rem;
+}
+
+button:enabled:enabled {
+    cursor: pointer;
+    background-color: darkslategray;
+    color: white;
+}
+
+button:disabled:disabled {
+    cursor: default;
+    background-color: darkgray;
+    color: white;
+}

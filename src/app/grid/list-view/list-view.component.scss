@@ -1,0 +1,40 @@
+table {
+    width: 100%;
+    height: 100%;
+}
+
+table, th, td {
+    border: 1px solid lightgray;
+}
+
+tr {
+    height: 2rem;
+    max-height: 2rem;
+}
+
+td:has(> button) {
+    text-align: center;
+    width: 0;
+}
+
+.no-data {
+    text-align: center;
+}
+
+button {
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 10px;
+}
+
+button:enabled:enabled {
+    cursor: pointer;
+    background-color: darkslategray;
+    color: white;
+}
+
+button:disabled:disabled {
+    cursor: default;
+    background-color: darkgray;
+    color: white;
+}

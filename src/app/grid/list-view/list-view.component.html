@@ -1,0 +1,31 @@
+<table>
+    <thead>
+        <tr>
+            <th *ngFor="let colDef of colDefs">
+                {{ colDef.title }}
+            </th>
+        </tr>
+    </thead>
+    
+    <tbody>
+        <tr *ngIf="!data?.length; else table" class="no-data">
+            <td [attr.colspan]="colDefs.length">
+                Нет данных для показа
+            </td>
+        </tr>
+        <ng-template #table>
+            <tr *ngFor="let item of data">
+                <td *ngFor="let colDef of colDefs">
+                    <button *ngIf="colDef.action; else textCell" (click)="performAction(colDef, item)">
+                        {{ colDef.getCellValue(item) }}
+                    </button>
+                    <ng-template #textCell>
+                        {{ colDef.getCellValue(item) }}
+                    </ng-template>
+                </td>
+            </tr>
+        </ng-template>
+    </tbody>
+
+</table>
+

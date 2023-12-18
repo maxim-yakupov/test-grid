@@ -1,1 +1,41 @@
-<h1>Grid</h1>
+<div class="grid">
+    <header>
+        <span class="filters">
+            <label>Поиск: </label>
+            <input type="text" placeholder="Имя пользователя" (input)="searchFieldUpdate$.next($event)" [disabled]="modalInfoText" />
+        </span>
+        <span class="grid-view-mode">
+            Вид:
+            <button (click)="viewMode = 'list'" [disabled]="viewMode == 'list'">Список</button>
+            <button (click)="viewMode = 'card'" [disabled]="viewMode == 'card'">Карточки</button>
+        </span>
+    </header>
+
+    <section>
+        <div class="modal-info" *ngIf="modalInfoText">
+            <span class="modal-info__text">{{ modalInfoText }}</span>
+        </div>
+        <app-grid-list-view *ngIf="viewMode == 'list'; else cardView"
+            [colDefs]="colDefs" [data]="data" (actionStateChanged)="processActionState($event)"></app-grid-list-view>
+        <ng-template #cardView>
+            <app-grid-card-view [data]="data"></app-grid-card-view>
+        </ng-template>
+    </section>
+
+    <footer>
+        <span class="grid-page-count">Найдено: {{ totalCount }}</span>
+        <span class="grid-page-size">
+            <label>Размер страницы: </label>
+            <select (change)="changePageSize($event)" [disabled]="modalInfoText">
+                <option *ngFor="let size of pageSizes" [value]="size" [selected]="size == pageSize">
+                    {{ size }}
+                </option>
+            </select>
+        </span>
+        <span class="grid-page-controls">
+            <button (click)="previousPage()" [disabled]="(pageNumber < 1) || modalInfoText" [textContent]="'<'"></button>
+            <span class="grid-page-number">{{ pageNumber + 1 }}</span>
+            <button (click)="nextPage()" [disabled]="((pageNumber + 1) * pageSize >= totalCount) || modalInfoText" [textContent]="'>'"></button>
+        </span>
+    </footer>
+</div>

@@ -1,0 +1,20 @@
+:host {
+    flex: 1;
+    overflow: auto;
+}
+
+.cards {
+    height: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1rem;
+    padding: 0.5rem;
+}
+
+.no-data {
+    display: flex;
+    flex: 1;
+    text-align: center;
+    flex-direction: column;
+    justify-content: center;
+}

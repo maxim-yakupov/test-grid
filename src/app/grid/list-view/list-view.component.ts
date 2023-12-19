@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ModalNotificatorService } from '../modal-notificator.service';
 
 export interface ColumnDefinition<T> {
   name: string;
@@ -7,8 +8,6 @@ export interface ColumnDefinition<T> {
   getCellValue: (item: T) => string;
   action?: (item: T) => Observable<void>;
 }
-
-type ActionState = 'started' | 'finished' | 'failed';
 
 @Component({
   selector: 'app-grid-list-view',
@@ -19,14 +18,15 @@ type ActionState = 'started' | 'finished' | 'failed';
 export class GridListViewComponent<T> {
   @Input() colDefs: ColumnDefinition<T>[] = [];
   @Input() data?: T[];
-  @Output() actionStateChanged = new EventEmitter<ActionState>();
 
+  constructor(private mns: ModalNotificatorService) { }
+  
   protected performAction(colDef: ColumnDefinition<T>, item: T) {
-    this.actionStateChanged.emit('started');
+    this.mns.actionState$.next('operation_started');
     if (colDef.action) {
       colDef.action(item).subscribe({
-        next: () => this.actionStateChanged.emit('finished'),
-        error: () => this.actionStateChanged.emit('failed'),
+        next: () => this.mns.actionState$.next('operation_finished'),
+        error: () => this.mns.actionState$.next('operation_failed'),
       });
     }
   }

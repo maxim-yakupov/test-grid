@@ -1,0 +1,39 @@
+:host {
+    border: 3px solid gray;
+    border-radius: 10px;
+    flex: 1;
+    height: 100%;
+    max-height: 15rem;
+    min-width: 15rem;
+}
+
+.card {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 1rem;
+    height: 100%;
+}
+
+footer {
+    text-align: right;
+}
+
+button {
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 10px;
+}
+
+button:enabled:enabled {
+    cursor: pointer;
+    background-color: darkslategray;
+    color: white;
+}
+
+button:disabled:disabled {
+    cursor: default;
+    background-color: darkgray;
+    color: white;
+}

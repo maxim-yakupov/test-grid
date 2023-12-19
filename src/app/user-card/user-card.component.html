@@ -1,0 +1,11 @@
+<div class="card">
+    <header>
+        <h3>{{ user.user_name }}</h3>
+    </header>
+    <section>
+        Статус: {{ user.is_active ? 'активный' : 'не активный' }}
+    </section>
+    <footer>
+        <button (click)="remove()">Удалить</button>
+    </footer>
+</div>

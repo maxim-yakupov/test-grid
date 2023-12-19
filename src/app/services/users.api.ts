@@ -24,7 +24,6 @@ export class UsersApi {
     ];
 
     getList(request: ListRequest): Observable<UserListResponseDto> {
-        console.log('getList:', request);
         let collection = this.DB;
         if (request.search) {
             // @ts-ignore
@@ -35,13 +34,13 @@ export class UsersApi {
         return of(collection).pipe(
             map(filtered => filtered.slice(offset, offset + request.itemsPerPage)),
             map(filtered => {
+                // throw new Error('my error 0');
                 return {
                     items: filtered,
                     total_count: total,
                 }
             }),
             delay(500),
-            tap(_ => console.log('Get list result:', _)),
             );
     }
 

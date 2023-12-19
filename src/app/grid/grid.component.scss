@@ -24,6 +24,8 @@ section {
     flex-direction: column;
     position: relative;
     border-radius: 10px;
+    border-bottom: 1px solid lightgray;
+    border-top: 1px solid lightgray;
 
     > * {
         flex: 1;
@@ -64,29 +66,46 @@ section {
         &:last-of-type {
             border-radius: 0 10px 10px 0;
         }
+
+        &:enabled:enabled {
+            cursor: pointer;
+            background-color: rgba(darkslategray, 0.5);
+            color: white;
+        }
+        
+        &:disabled:disabled {
+            cursor: default;
+            background-color: darkslategray;
+            color: white;
+        }
     }
 }
 
-.grid-page-controls > * {
-    display: inline-block;
-    background-color: darkslategray;
-    color: white;
-    border-radius: 50%;
-    text-align: center;
-    height: 2rem;
-    width: 2rem;
-    padding: 0.5rem;
-    margin: 0 1rem;
-}
+.grid-page-controls {
+    > * {
+        display: inline-block;
+        text-align: center;
+        height: 2rem;
+        width: 2rem;
+        padding: 0.5rem;
+        margin: 0 1rem;
+    }
 
-button:enabled:enabled {
-    cursor: pointer;
-    background-color: darkslategray;
-    color: white;
-}
+    > button {
+        background-color: darkslategray;
+        color: white;
+        border-radius: 50%;
+    }
 
-button:disabled:disabled {
-    cursor: default;
-    background-color: darkgray;
-    color: white;
+    > button:enabled:enabled {
+        cursor: pointer;
+        background-color: darkslategray;
+        color: white;
+    }
+    
+    > button:disabled:disabled {
+        cursor: default;
+        background-color: darkgray;
+        color: white;
+    }
 }

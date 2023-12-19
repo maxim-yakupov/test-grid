@@ -1,3 +1,17 @@
-<div>
-    card view
+<div class="cards">
+    <div *ngIf="!data?.length; else cards" class="no-data">
+        Нет данных для показа
+    </div>
+    <ng-template #cards>
+        <ng-container *ngFor="let item of data">
+
+            <ng-container
+                *ngTemplateOutlet="cardTemplateRef ? cardTemplateRef : defaultCard; context: { $implicit: item }">
+            </ng-container>
+    
+            <ng-template #defaultCard let-item>
+                <app-default-card [item]="item"></app-default-card>
+            </ng-template>
+        </ng-container>
+    </ng-template>    
 </div>

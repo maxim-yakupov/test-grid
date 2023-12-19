@@ -1,43 +1,64 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, ContentChild, ElementRef, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DataSource } from './data-source.model';
 import { ColumnDefinition } from './list-view/list-view.component';
 import { Subject, Subscription, debounceTime, map } from 'rxjs';
+import { ActionState, ModalNotificatorService } from './modal-notificator.service';
 
 type GridViewModeOptions = 'card' | 'list';
 
 @Component({
   selector: 'app-grid',
   templateUrl: './grid.component.html',
-  styleUrls: ['./grid.component.scss']
+  styleUrls: ['./grid.component.scss'],
+  providers: [ModalNotificatorService],
 })
 export class GridComponent<T> implements OnInit, OnDestroy {
   @Input() dataSource?: DataSource<T>;
   @Input() colDefs: ColumnDefinition<T>[] = [];
   @Input() viewMode: GridViewModeOptions = 'list';
   @Input() data?: T[];
+  @Input() pageSizes = [5, 10, 20, 100];
+  @Input() pageSize = 10;
 
+  @ContentChild('cardTemplate') cardTemplateRef: TemplateRef<any> | null = null;
+  @ViewChild('search') searchInput: ElementRef | null = null;
+  
   protected searchFieldUpdate$ = new Subject<any>();
-  protected pageSizes = [5, 10, 20];
 
   protected totalCount = 0;
   protected pageNumber = 0;
-  protected pageSize = 10;
   protected query?: string;
 
+  /** Text in modal block about current action performing.
+   * Using also for disabling controls, since we should not allow requests
+   * while message is being shown. */
   protected modalInfoText?: string;
 
   private modalInfoAutoHideTimer?: number;
   private subscriptions: Subscription[] = [];
 
+  constructor(private modalNotificatorService: ModalNotificatorService) {}
+
   ngOnInit(): void {
-    this.refresh();
+    if (!this.pageSizes.includes(this.pageSize)) {
+      const pageSize = this.pageSizes[0] ?? 1;
+      console.warn(
+        `Can't set [pageSize] of ${this.pageSize}, since it isn't available in [pageSizes].
+        Setting to ${pageSize}.`);
+      this.pageSize = pageSize;
+    }
 
     this.subscriptions.push(
+      this.modalNotificatorService.actionState$.subscribe(
+        (state) => this.processActionState(state)),
+
       this.searchFieldUpdate$.pipe(
-        debounceTime(300),
+        debounceTime(500),
         map(event => event.target),
       ).subscribe((input : HTMLInputElement) => this.search(input.value))
     );
+
+    this.callRefresh();
   }
 
   /** Since I'm apparently using not the latest version of Angular,
@@ -45,45 +66,56 @@ export class GridComponent<T> implements OnInit, OnDestroy {
    * so have to unsubscribe manually */
   ngOnDestroy(): void {
     this.subscriptions.forEach(subs => subs.unsubscribe());
+
+    if (this.modalInfoAutoHideTimer) {
+      clearTimeout(this.modalInfoAutoHideTimer);
+    }
   }
 
   previousPage() {
-    console.log('Prev page');
     this.pageNumber--;
-    this.refresh();
+    this.callRefresh();
   }
 
   nextPage() {
-    console.log('Next page');
     this.pageNumber++;
-    this.refresh();
+    this.callRefresh();
   }
 
   changePageSize(event: any) {
     const newPageSize = Number.parseInt(event.target?.value ?? 0);
-    console.log('New page size:', newPageSize);
     this.pageSize = newPageSize;
-    this.refresh();
+    this.callRefresh();
   }
 
   search(query: string) {
-    console.log('Search for:', query);
     this.query = query;
-    this.refresh();
+    this.callRefresh();
   }
 
-  protected processActionState(actionState: string) {
-    console.log(actionState);
+  protected processActionState(actionState: ActionState) {
     switch (actionState) {
-      case 'started':
-        this.toggleModalInfo('Выполняется действие...', true);
+      case 'data_loading':
+        this.toggleModalInfo('Загрузка данных...');
         break;
-      case 'failed':
-        this.toggleModalInfo('Произошла ошибка, действие не сработало', true);
+      case 'data_loaded':
+        this.toggleModalInfo();
+        this.focusSearchField();
+        break;
+      case 'operation_started':
+        this.toggleModalInfo('Выполняется операция...', true);
+        break;
+      case 'operation_finished':
+        this.toggleModalInfo();
+        this.callRefresh();
+        break;
+      case 'operation_failed':
+      case 'data_failed':
+        this.toggleModalInfo('Произошла ошибка, операция не выполнена', true);
+        this.focusSearchField();
         break;
       default:
-        this.toggleModalInfo();
-        this.refresh();
+        console.warn(`Unknown action state '${actionState}'`);
         break;
     }
   }
@@ -98,12 +130,12 @@ export class GridComponent<T> implements OnInit, OnDestroy {
     }
   }
 
-  private refresh() {
-    this.updateData(this.pageNumber, this.pageSize, this.query);
+  private callRefresh() {
+    this.callDataUpdate(this.pageNumber, this.pageSize, this.query);
   }
 
-  private updateData(pageNumber: number, pageSize: number, query?: string) {
-    this.toggleModalInfo('Загрузка...');
+  private callDataUpdate(pageNumber: number, pageSize: number, query?: string) {
+    this.modalNotificatorService.actionState$.next('data_loading');
 
     this.dataSource?.getData({
       itemsPerPage: pageSize,
@@ -112,13 +144,20 @@ export class GridComponent<T> implements OnInit, OnDestroy {
       onLoad: (data) => {
         this.data = data.data;
         this.totalCount = data.total;
-        this.toggleModalInfo();
+        this.modalNotificatorService.actionState$.next('data_loaded');
       },
       onFail: (err) => {
+        console.error(err);
         this.data = undefined;
         this.totalCount = 0;
-        this.toggleModalInfo(err.message, true);
+        this.modalNotificatorService.actionState$.next('data_failed');
       },
     });
+  }
+
+  private focusSearchField() {
+    setTimeout(() => {
+       this.searchInput?.nativeElement?.focus();
+     }, 0);
   }
 }

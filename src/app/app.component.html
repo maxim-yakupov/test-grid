@@ -1,2 +1,7 @@
 <h1>Пользователи</h1>
-<app-grid [dataSource]="usersDataSource" [colDefs]="columnDefinitions"></app-grid>
+<app-grid [dataSource]="usersDataSource" [colDefs]="columnDefinitions" [viewMode]="'list'"
+    [pageSizes]="[5, 10, 20]" [pageSize]="5">
+    <ng-template #cardTemplate let-user>
+        <app-user-card [user]="user"></app-user-card>
+    </ng-template>
+</app-grid>

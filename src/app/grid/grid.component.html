@@ -2,7 +2,8 @@
     <header>
         <span class="filters">
             <label>Поиск: </label>
-            <input type="text" placeholder="Имя пользователя" (input)="searchFieldUpdate$.next($event)" [disabled]="modalInfoText" />
+            <input type="text" placeholder="Имя пользователя" #search
+                (input)="searchFieldUpdate$.next($event)" [disabled]="modalInfoText" />
         </span>
         <span class="grid-view-mode">
             Вид:
@@ -16,9 +17,9 @@
             <span class="modal-info__text">{{ modalInfoText }}</span>
         </div>
         <app-grid-list-view *ngIf="viewMode == 'list'; else cardView"
-            [colDefs]="colDefs" [data]="data" (actionStateChanged)="processActionState($event)"></app-grid-list-view>
+            [colDefs]="colDefs" [data]="data"></app-grid-list-view>
         <ng-template #cardView>
-            <app-grid-card-view [data]="data"></app-grid-card-view>
+            <app-grid-card-view [data]="data" [cardTemplateRef]="cardTemplateRef"></app-grid-card-view>
         </ng-template>
     </section>
 

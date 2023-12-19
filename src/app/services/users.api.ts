@@ -3,6 +3,8 @@ import { Observable, delay, map, of, tap } from 'rxjs'
 
 @Injectable({ providedIn: 'root' })
 export class UsersApi {
+    private readonly simulatedDelayMs = 500;
+
     private DB: UserDto[] = [
         { id: 'u1', user_name: 'Ivan Z.', is_active: true },
         { id: 'u2', user_name: 'Mikhail X.', is_active: true },
@@ -40,7 +42,7 @@ export class UsersApi {
                     total_count: total,
                 }
             }),
-            delay(500),
+            delay(this.simulatedDelayMs),
             );
     }
 
@@ -52,7 +54,7 @@ export class UsersApi {
                 }
                 return this.DB[index];
             }),
-            delay(500),
+            delay(this.simulatedDelayMs),
             );
     }
 
@@ -65,7 +67,7 @@ export class UsersApi {
                 }
                 this.DB.splice(index, 1);
             }),
-            delay(500),
+            delay(this.simulatedDelayMs),
             );
     }
 }
